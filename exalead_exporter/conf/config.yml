@@ -1,6 +1,6 @@
 
 exaleads:
-  - host: host.domaine
+  - host: host.domain
     port: 9398
 #      protocol: https
     verify_ssl: false

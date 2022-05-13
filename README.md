@@ -1,22 +1,22 @@
-# veeam_exporter
+# exalead_exporter
 
 ## Description
-Prometheus exporter for Veeam Entreprise Manager
+Prometheus exporter for Exalead solution
 
-This exporter collect metrics from Veeam Enterprise Manager HTTP API.
+This exporter collect metrics from Exalead HTTP API.
 
-It is a python HTTP server that exposes metrics to http (default port 9247) that can be then scrapped by Prometheus.
+It is a python HTTP server that exposes metrics to http (default port 9271) that can be then scrapped by [Prometheus](https://github.com/prometheus).
 
-Several Veeam server can be polled by adding them to the YAML config file, by adding a host section:
+![exporter_diagram](screenshots/exalead_licences.png)
+
+Several Exalead servers can be polled by adding them to the YAML config file, by adding a host section:
 
 **Config**: (see config.yml)
 
 ```yaml
-veeams:
+exaleads:
   - host: host.domain
     port: 9398
-    user: 'user'
-    password: 'password'
 #   protocol: https
 #   verify_ssl: false
 #   timeout: 20
@@ -24,9 +24,9 @@ veeams:
 #   default_labels:
 #     - name: veeam_em
 #       value: my_veeam_em_server.domain
-#       proxy:
-#         url: http://my.proxy.domain:port/
-#         protocol: https
+#   proxy:
+#     url: http://my.proxy.domain:port/
+#     protocol: https
 
 weblisten:
   address: 0.0.0.0
@@ -36,7 +36,7 @@ logger:
   level: info
   facility: syslog
 
-metrics_file: "conf/metrics/*_metrics.yml"
+metrics_file: "metrics/*_metrics.yml"
 ```
 
 ## Usage
@@ -44,13 +44,13 @@ metrics_file: "conf/metrics/*_metrics.yml"
 The exporter may run as a unix command with module installation or as standalone python script without instalation.
 <summary>Usage as a system command</summary>
 
-the easiest wayt is to install from pip:
+the easiest way is to install from pip:
 
 ```shell
-pip3 install --upgrade veeam_exporter
+pip3 install --upgrade exalead-exporter
 ```
 
-then you can use the entry point create by the installer of the module in /usr/local/bin/veeam_exporter or in [venv]/bin/veeam_exporter for venv context.
+then you can use the entry point create by the installer of the module in /usr/local/bin/exalead_exporter or in [venv]/bin/exalead_exporter for venv context.
 The commanded usage is in venv.
 
 <summary>Usage as a Python Script</summary>
@@ -68,30 +68,33 @@ pip3 install -r pip_requirements.txt
 Contents of requirements.txt
 
 ```python
-Prometheus-client>=0.8.0
-requests==2.23.0
-PyYAML==5.3.1
+xmltodict==0.12.0
 tenacity==6.2.0
-urllib3>=1.25.9
-Jinja2>=2.11.2
-python-dateutil>=0.6.12
+requests>=2.20.0
+Jinja2==3.0.3
+urllib3==1.24.2
+prometheus_client==0.14.1
+PyYAML>=5.3.1
+python-dateutil>=2.7.0
 ```
 
 </details>
 
-+ Consider, to extract the archiv file in /tmp folder; this will generate a folder /tmp/veeam_exporter_[version].
-+ create a directory where you want by example /opt/veeam_exporter_[version],
-+ move the /tmp/veeam_exporter_[version]/veeam_exporter_package directory to /opt/eeam_exporter_[version]
-+ create a command file to launch the exporter in dir /opt/veeam_exporter_[version]
++ Consider, to extract the archiv file in /tmp folder; this will generate a folder /tmp/exalead_exporter_[version].
++ create a directory where you want by example /opt/exalead_exporter_[version],
++ move the /tmp/exalead_exporter_[version]/exalead_exporter_package directory to /opt/eeam_exporter_[version]
++ create a command file to launch the exporter in dir /opt/exalead_exporter_[version]
 ```shell
-vi /opt/veeam_exporter_X.Y.Z/veeam_exporter_cmd
+vi /opt/exalead_exporter_X.Y.Z/exalead_exporter_cmd
 #!/usr/libexec/platform-python
 # -*- coding: utf-8 -*-
 import re
 import sys
-from veeam_exporter.veeam_exporter import main
+
+from exalead_exporter.exalead_exporter import main
+
 if __name__ == '__main__':
-    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
     sys.exit(main())
 
 ```
@@ -100,14 +103,21 @@ if __name__ == '__main__':
 
 example with the default dumy config file:
 ```shell
-python3 veeam_exporter_cmd -n -v
-veeam_exporter[647132]: level=INFO - veeam_exporter 1.0.3 starting....
-veeam_exporter[647132]: level=DEBUG - config is {'veeams': [{'host': 'host.domaine', 'port': 9398, 'user': 'user', 'password': 'password', 'verify_ssl': False, 'timeout': 20}], 'weblisten': {'address': '0.0.0.0', 'port': 9247}, 'logger': {'level': 'info', 'facility': 'syslog'}, 'metrics_file': 'conf/metrics/*_metrics.yml'}
-veeam_exporter[647132]: level=ERROR - Connection Exception: Host host.domaine: HTTPSConnectionPool(host='host.domaine', port=9398): Max retries exceeded with url: /api/sessionMngr/?v=latest (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fa9e4eab9b0>: Failed to establish a new connection: [Errno -2] Name or service not known',))
-veeam_exporter[647132]: level=DEBUG - # HELP veeam_em_up probe success  login status: 0 Down / 1 Up
-veeam_exporter[647132]: level=DEBUG - # TYPE veeam_em_up gauge
-veeam_exporter[647132]: level=DEBUG - veeam_em_up 0.0
-veeam_exporter[647132]: level=INFO - veeam_exporter 1.0.3 stopped.
+python3 exalead_exporter_cmd -n -v
+
+exalead_exporter[227114]: level=INFO - exalead_exporter 0.0.2 starting....
+exalead_exporter[227114]: level=DEBUG - config is {'exaleads': [{'host': 'host.domain', 'port': 9398, 'verify_ssl': False, 'timeout': 20}], 'weblisten': {'address': '0.0.0.0', 'port': 9271}, 'logger': {'level': 'info', 'facility': 'syslog'}, 'metrics_file': 'metrics/*.yml'}
+exalead_exporter[227114]: level=WARNING - [Errno 2] No such file or directory: '/home/users/d107684/python/exalead-exporter-package/exalead_exporter/metrics'
+exalead_exporter[227114]: level=ERROR - no metrics found
+exalead_exporter[227114]: level=INFO - exalead_exporter 0.0.2 stopped.
+[ /home/users/d107684/python/exalead-exporter-package ]d107684@dal-v-survdadc $ python3 cli.py -v -n
+exalead_exporter[228511]: level=INFO - exalead_exporter 0.0.2 starting....
+exalead_exporter[228511]: level=DEBUG - config is {'exaleads': [{'host': 'host.domain', 'port': 9398, 'verify_ssl': False, 'timeout': 20}], 'weblisten': {'address': '0.0.0.0', 'port': 9271}, 'logger': {'level': 'info', 'facility': 'syslog'}, 'metrics_file': 'conf/metrics/*.yml'}
+exalead_exporter[228511]: level=ERROR - Connection Exception: Host host.domain: HTTPConnectionPool(host='host.domain', port=9398): Max retries exceeded with url: /mami/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f02ab6be7f0>: Failed to establish a new connection: [Errno -2] Name or service not known',))
+exalead_exporter[228511]: level=DEBUG - # HELP exalead_up probe success  login status: 0 Down / 1 Up
+exalead_exporter[228511]: level=DEBUG - # TYPE exalead_up gauge
+exalead_exporter[228511]: level=DEBUG - exalead_up 0.0
+exalead_exporter[228511]: level=INFO - exalead_exporter 0.0.2 stopped
 ```
 
 ## exporter command line options
@@ -115,7 +125,7 @@ veeam_exporter[647132]: level=INFO - veeam_exporter 1.0.3 stopped.
 to start the exporter:
 
 ```shell
-./veeam_exporter &
+./exalead_exporter &
 ```
 
 By default, it will load the file config.yml to perform action.
@@ -125,12 +135,12 @@ By default, it will load the file config.yml to perform action.
 
 ```shell
 
-Usage: veeam_exporter [-h] [-b BASE_PATH] [-c CONFIG_FILE]
+Usage: exalead_exporter [-h] [-b BASE_PATH] [-c CONFIG_FILE]
                       [-f LOGGER.FACILITY] [-l {error,warning,info,debug}]
                       [-o  METRICS_FILE] [-m  METRIC] [-n] [-t  TARGET]
                       [-w WEB.LISTEN_ADDRESS] [-V] [-v]
 
-collector for veeam server.
+collector for exalead.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -164,34 +174,34 @@ optional arguments:
 To test your configuration you can launch the exporter in dry_mode:
 
 ```shell
-./veeam_exporter -v -n -t host.domain
+./exalead_exporter -v -n -t host.domain
 ```
 
-This command will try to connect to the 'host.domain' veeam server with parameters specified in config.yml, expose the collected metrics, and eventually the warning or errors, then exits.
+This command will try to connect to the 'host.domain' exaleas server with parameters specified in config.yml, expose the collected metrics, and eventually the warning or errors, then exits.
 
 ## Prometheus config
 
-Since several veeam servers can be set in the exporter, Prometheus addresses each server by adding a target parameter in the url. The "target" must be the same (lexically) that in exporter config file.
+Since several exalead servers can be set in the exporter, Prometheus addresses each server by adding a target parameter in the url. The "target" must be the same (lexically) that in exporter config file.
 
 ```yaml
-  - job_name: "veeam"
+  - job_name: "exalead"
     scrape_interval: 120s
     scrape_timeout: 60s
     metrics_path: /metrics
 
     static_configs:
-      - targets: [ veeamhost.domain ]
+      - targets: [ exaleadhost.domain ]
         labels:
           environment: "PROD"
 #    file_sd_configs:
-#      - files: [ "/etc/prometheus/veeam_exp/*.yml" ]
+#      - files: [ "/etc/prometheus/exalead_exp/*.yml" ]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: "veeam-exporter-hostname.domain:9247"  # The veeam exporter's real hostname.
+        replacement: "exalead-exporter-hostname.domain:9247"  # The exalead exporter's real hostname.
 
 ```
 ## Metrics
@@ -202,17 +212,14 @@ All Values, computations, labels are defined in the metrics files, meaning that 
 ### Collected Metrics
 
 All metrics are defined in the configuration file (conf/metrics/*.yml). You can retrive all metric names here. Most of them have help text too.
+All metrics are prefixed with "exaled_".
 
 file | domain | metrics
 ---- | ------ | -------
-veeam_overview_metrics.yml | general results | count by type "backup", "proxy", "repository", "scheduled_jobs", "successful_vms", "warning_vms"
-vm_overview_metrics.yml | general vm results | VMs count by protection type "protected","backedup","replicated","restore_points"<br>VMs total size in bytes by type "full_backup_points", "incremental_backup_points", "replica_restore_points", "source_vms"<br>percent of sucessful backup of VMs
-repositories_metrics.yml | repositories | total and free size and in bytes of each repository by name and type
-jobs_overview_metrics.yml | jobs generics | various count of job types "running", "scheduled", "scheduled_backup" "scheduled_replica_jobs_count"<br>total number of job runs by type "total", "successfull", "warning", "failed"<br>max duration for job by type and name of longuest
-backup_agent_metrics.yml | backup agent | backup agent status 1 Online / 2 Offline labeled by nae , type and version
-backup_servers_metrics.yml | backup servers | config of each backup server labeled by name, description, port, version: no value collect (1 returned)
-backup_jobs_sessions_metrics.yml | backup jobs runs | last backup job run info state, duration, retries labeled by backup server, jobname, jobtype
-vm_backup_jobs_sessions_metrics.yml| vm backup jobs runs | last vm backup job runs info state, duration, retries, total_bytes labeled by backup server, jobname, vmname, taskname, message
+none | default | exalead_up : 0 or 1.<br>define if exalead server can be reached or not.
+licence_status.yml | general licences elements | prefix: exalead_license_ .<br><li> licence status, <li> expiration, <li>token usage, <li>licence components activation.<br>(see [licences dashboard](screenshots/exalead_licences.png))
+deploymentsStatus.yml | general indexing processes | prefix: exalead_process_.<br> <li> status labeled by process name, <li> start_timestamp"backedup", <li>unexpected restart count, <li> loop crashing.<br>(see [processes dashboard](screenshots/exalead_processes.png))
+connectorStatus.yml | indexation | Prefix: exalead_connectors_.<br> gauge by connector name: <li>active_documents, <li>added, <li>deleted, <li>failed deleted, <li>indexed documents, <li>partial update, <li>replaced, <li>total <li>scan_status, <li>scan_retries, <li>scan_duration, <li>scan_deleted_objects, <li>scan_pushed_objects<br>(see [processes dashboard](screenshots/exalead_connectors.png))
 
 ## Extending metrics
 
@@ -235,7 +242,7 @@ All actions have default "attributes":
 - loop_var: to set the name of the variable that will receive the current value in the loop. Default is 'item'.
 - when: a list of condition (and) that must be check and be true to perform the action.
 
-The "attributes" are analyzed in the order specified in previous table; it means that you can't use "item" var (obtained from 'with_items' directive) in the vars section because it is not yet defined when the 'vars' section is evaluated. If you need that feature, you will have to consider 'with_items' in an 'actions' section (see metrics/backup_jobs_sessions_metrics.yml).
+The "attributes" are analyzed in the order specified in previous table; it means that you can't use "item" var (obtained from 'with_items' directive) in the vars section because it is not yet defined when the 'vars' section is evaluated. If you need that feature, you will have to consider 'with_items' in an 'actions' section (see metrics/connectorStatus.yml).
 
 action | parameter | description | remark
 ------ | ----------- | ------ | ------

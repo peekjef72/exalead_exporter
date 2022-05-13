@@ -45,18 +45,20 @@ def main():
    else:
       dry_mode_str = ''
 
-   if not os.path.exists(config_path):
-      if not args.dry_mode:
-         os.mkdir( config_path )
-      print( '{0}{1} directory created'.format(dry_mode_str, config_path) )
-   elif not os.path.isdir(config_path):
-      print( '{0}error: {1} is not a directory'.format(dry_mode_str, config_path) )
-      sys.exit(1)
+   if os.path.exists(config_path):
+      if not os.path.isdir(config_path):
+         print( '{0}error: {1} is not a directory'.format(dry_mode_str, config_path) )
+         sys.exit(1)
+      else:
+         print( '{0}warning: {1} directory already exists'.format(dry_mode_str, config_path) )
+         if not args.overwrite:
+            print('{0}ok: no copy performed. (overwrite is False)'.format(dry_mode_str))
+            sys.exit(0)
+         else:
+            shutil.rmtree(config_path, ignore_errors=True)
    else:
-      print( '{0}warning: {1} directory already exists'.format(dry_mode_str, config_path) )
-      if not args.overwrite:
-         print('{0}ok: no copy performed. (overwrite is False)'.format(dry_mode_str))
-         sys.exit(0)
+      # path doesn't exist
+      pass
    
    if hasattr(exalead_exporter, '__path__'):
       exalead_path = (exalead_exporter.__path__)[0]
@@ -66,7 +68,7 @@ def main():
       sys.exit(1)
 
    if not args.dry_mode:
-      shutil.copytree('exalead_path' + '/conf/', config_path)
+      shutil.copytree(exalead_path + '/conf/', config_path)
    print('{0}ok: files copied in {1}'.format(dry_mode_str, config_path))
    sys.exit(0)
 
