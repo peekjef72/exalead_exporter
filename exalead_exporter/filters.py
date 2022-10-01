@@ -1,7 +1,7 @@
 
 from  pathlib import Path
 import importlib, sys, os, re
-from inspect import getmembers, isclass
+from inspect import getabsfile, getmembers, isclass
 
 #************************************************************************
 class Filter:
@@ -19,13 +19,19 @@ class Filters(object):
    filters = {}
 
    #********************************
-   def __init__(self, path):
-      self.add( Filter('default_filters') )
+   def __init__(self, path=None, module_name=None):
+
+      self.add( Filter('default') )
+
       if path is None:
-         if 'exalead_exporter' in sys.modules:
-            path = (sys.modules['exalead_exporter'].__path__)[0] + '/custom_filters'
+         if module_name is None:
+            module_name = __name__.split('.')[0]
+         if module_name is not None and module_name in sys.modules:
+            mod = sys.modules[module_name]
+            path = os.path.join(os.path.dirname( getabsfile(mod) ), 'custom_filters')
          else:
-            path='./custom_filters'
+            path=os.path.join('.', 'custom_filters' )
+
       self.load(path)
 
    #********************************
@@ -40,7 +46,7 @@ class Filters(object):
    #********************************
    def find(self, name):
       if name not in Filters.filters:
-         name = 'default_filters'
+         name = 'default'
       return Filters.filters[name]
 
    #********************************

@@ -1,9 +1,8 @@
-# from exalead_exporter.exalead_api import ExaleadAPI, ExaleadAPIUnauthorizedError
 from requests.exceptions import ConnectionError, ReadTimeout, RequestException
 
 from prometheus_client import CollectorRegistry, generate_latest, Gauge
 
-from tenacity import retry, RetryError, retry_if_exception_type
+from tenacity import retry, RetryError
 from tenacity import stop_after_attempt, wait_fixed, retry_if_result
 
 #*******************************************************************************************************
@@ -109,7 +108,6 @@ class ExaleadExporter(object):
          self.logger.error('Connect API Failed on {1}: {0}'.format(e, self.api.getHost()))
 
       return self.FAILURE
-
 
    #***********************************************
    def get_entity_stat(self, url):

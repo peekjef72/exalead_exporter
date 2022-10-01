@@ -103,11 +103,26 @@ def read_metrics_files(base_path, metrics_pattern, metric_name):
 def my_exit(code):
    global logger
 
-   logger.info('{0} {1} stopped.'.format(PKG_NAME, PKG_VERSION) )
-   logging.shutdown();
+   if logger is not None:
+      logger.info('{0} {1} stopped.'.format(PKG_NAME, PKG_VERSION) )
+   logging.shutdown()
 
    sys.exit(code)
 
+#******************************************************************************************
+def get_module_path(module_name=None):
+
+   path = None
+
+   if module_name is not None:
+      if module_name in sys.modules:
+         mod = sys.modules[module_name]
+         path = os.path.dirname( inspect.getabsfile(mod) )
+   if path is None:
+     path = os.path.dirname( inspect.getabsfile(inspect.currentframe()) )
+
+   return path
+   
 #******************************************************************************************
 def main():
    global logger
@@ -168,7 +183,7 @@ def main():
    inArgs = myArgs()
    args = parser.parse_args(namespace=inArgs)
 
-   base_path = os.path.dirname( inspect.getabsfile(inspect.currentframe()) )
+   base_path = get_module_path()
    if args.base_path is not None:
       base_path = inArgs.base_path
 
@@ -179,12 +194,21 @@ def main():
       else:
          config_file = args.config_file
 
-   with open(config_file, 'r') as cfg:
-      try:
-         config = yaml.safe_load(cfg)
-      except yaml.YAMLError as exc:
-         print(exc)
-         sys.exit(1);
+   try:
+      with open(config_file, 'r') as cfg:
+         try:
+            config = yaml.safe_load(cfg)
+         except yaml.YAMLError as exc:
+            print(exc)
+            sys.exit(1)
+   except FileNotFoundError:
+      print("ERROR: config file not found'{0}'.".format(config_file))
+      my_exit(1)
+
+   #* analyze config
+   if config is None:
+      print("ERROR: can't read config file '{0}'.".format(config_file))
+      my_exit(1)
 
    logging.getLogger("urllib3").setLevel(logging.CRITICAL)
    #***********************************************************************************************
@@ -254,14 +278,10 @@ def main():
       logger.addHandler(stream_handler)
 
    logger.info('{0} {1} starting....'.format(PKG_NAME, PKG_VERSION) )
-   #******************************
-   #* analyze config
-   if config is None:
-      logging.error("can't read config file '{0}'.".format(config_file))
-      my_exit(1)
 
    logger.debug( 'config is {0}'.format(config) )
 
+   #******************************
    metrics_file = None
    if args.metrics_file is not None:
       metrics_file = args.metrics_file

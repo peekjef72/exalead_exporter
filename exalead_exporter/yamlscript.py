@@ -1,4 +1,3 @@
-#import sys, os, logging
 from threading import Lock
 
 from jinja2 import Environment
@@ -38,7 +37,7 @@ class MyCounter(Counter):
 
     def _child_samples(self):
         return (
-            ('_total', {}, self._value.get()),
+            ('_total', {}, self._value.get(), None, self._value.get_exemplar()),
         )
 
 #*******************************************************************************************************

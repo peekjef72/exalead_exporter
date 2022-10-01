@@ -1,5 +1,5 @@
-import exalead_exporter, sys, os, argparse
-import shutil 
+import argparse, os, shutil, sys  
+from exalead_exporter.exalead_exporter import get_module_path
 
 #******************************************************************************************
 class myArgs:
@@ -39,29 +39,28 @@ def main():
    if args.config_path is not None:
       config_path = inArgs.config_path
 
-   
    if args.dry_mode:
       dry_mode_str = '[check_mode] '
    else:
       dry_mode_str = ''
 
-   if os.path.exists(config_path):
-      if not os.path.isdir(config_path):
+   if not os.path.exists(config_path):
+      pass
+      # do nothing since shutil.copytree() will create the directory and raise exception if it exists!
+#      if not args.dry_mode:
+#         os.mkdir( config_path )
+#      print( '{0}{1} directory created'.format(dry_mode_str, config_path) )
+   elif not os.path.isdir(config_path):
          print( '{0}error: {1} is not a directory'.format(dry_mode_str, config_path) )
          sys.exit(1)
-      else:
-         print( '{0}warning: {1} directory already exists'.format(dry_mode_str, config_path) )
-         if not args.overwrite:
-            print('{0}ok: no copy performed. (overwrite is False)'.format(dry_mode_str))
-            sys.exit(0)
-         else:
-            shutil.rmtree(config_path, ignore_errors=True)
    else:
-      # path doesn't exist
-      pass
+      print( '{0}warning: {1} directory already exists'.format(dry_mode_str, config_path) )
+      if not args.overwrite:
+         print('{0}ok: no copy performed. (overwrite is False)'.format(dry_mode_str))
+         sys.exit(0)
    
-   if hasattr(exalead_exporter, '__path__'):
-      exalead_path = (exalead_exporter.__path__)[0]
+   exalead_path = get_module_path()
+   if exalead_path is not None:
       print('{0}path for module exalead_exporter is : {1}'.format( dry_mode_str, exalead_path ))
    else:
       print('{0}error: path for module exalead_exporter not found!'.format(dry_mode_str))

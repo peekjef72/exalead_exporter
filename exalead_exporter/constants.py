@@ -1,4 +1,4 @@
 PKG_NAME = 'exalead_exporter'
-PKG_VERSION = '0.0.2'
+PKG_VERSION = '0.0.3'
 EXPORTER_CONFIG_NAME = 'config.yml'
 
