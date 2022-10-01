@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a changelog](https://github.com/olivierlacan/keep-a-changelog).
 
  <!--next-version-placeholder-->
-## v0.0.3 (2022-10-019)
+## v0.0.3 (2022-10-01)
 ### fixed
 - fix custom filter root class.
 - update prometheus client api calls.
