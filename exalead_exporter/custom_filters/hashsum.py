@@ -1,19 +1,8 @@
 # -*- coding:utf-8 -*-
 #************************************************************************
-import sys
-
 import hashlib
 
-Filter = None
-if 'Filter' in sys.modules:
-   Filter = sys.modules['Filter']
-elif 'filters' in sys.modules:
-   Filter = sys.modules['filters'].Filter
-elif 'exalead_exporter.filters' in sys.modules:
-   Filter = sys.modules['exalead_exporter.filters'].Filter
-
-if Filter is None:
-   raise Exception('Filter module not loaded.')
+from exalead_exporter.filters import Filter
 
 #************************************************************************
 class HashsumFilter(Filter):

@@ -1,5 +1,7 @@
+# -*- coding:utf-8 -*-
+#************************************************************************
 
-from  pathlib import Path
+from pathlib import Path
 import importlib, sys, os, re
 from inspect import getabsfile, getmembers, isclass
 
@@ -21,8 +23,6 @@ class Filters(object):
    #********************************
    def __init__(self, path=None, module_name=None):
 
-      self.add( Filter('default') )
-
       if path is None:
          if module_name is None:
             module_name = __name__.split('.')[0]
@@ -41,7 +41,7 @@ class Filters(object):
    #********************************
    def add(self, filter):
       if isinstance( filter, Filter ):
-         Filters.filters[filter.name] = filter;
+         Filters.filters[filter.name] = filter
 
    #********************************
    def find(self, name):
