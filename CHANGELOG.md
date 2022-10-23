@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a changelog](https://github.com/olivierlacan/keep-a-changelog).
 
  <!--next-version-placeholder-->
+## v0.0.4 (2022-10-23)
+### fixed
+- fix Filter : remove 'default' function overwrite.
+- fix Filter import from custom filters.
+
 ## v0.0.3 (2022-10-01)
 ### fixed
 - fix custom filter root class.
